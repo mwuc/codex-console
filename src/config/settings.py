@@ -76,7 +76,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
     ),
     "webui_port": SettingDefinition(
         db_key="webui.port",
-        default_value=8000,
+        default_value=18080,
         category=SettingCategory.WEBUI,
         description="Web UI 监听端口"
     ),
@@ -89,7 +89,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
     ),
     "webui_access_password": SettingDefinition(
         db_key="webui.access_password",
-        default_value="admin123",
+        default_value="admin999",
         category=SettingCategory.WEBUI,
         description="Web UI 访问密码",
         is_secret=True
@@ -136,7 +136,7 @@ SETTING_DEFINITIONS: Dict[str, SettingDefinition] = {
     ),
     "openai_redirect_uri": SettingDefinition(
         db_key="openai.redirect_uri",
-        default_value="http://localhost:1455/auth/callback",
+        default_value="http://localhost:18080/auth/callback",
         category=SettingCategory.OPENAI,
         description="OpenAI OAuth 回调 URI"
     ),
@@ -616,9 +616,9 @@ class Settings(BaseModel):
 
     # Web UI 配置
     webui_host: str = "0.0.0.0"
-    webui_port: int = 8000
+    webui_port: int = 18080
     webui_secret_key: SecretStr = SecretStr("your-secret-key-change-in-production")
-    webui_access_password: SecretStr = SecretStr("admin123")
+    webui_access_password: SecretStr = SecretStr("admin999")
 
     # 日志配置
     log_level: str = "INFO"
@@ -629,7 +629,7 @@ class Settings(BaseModel):
     openai_client_id: str = "app_EMoamEEZ73f0CkXaXp7hrann"
     openai_auth_url: str = "https://auth.openai.com/oauth/authorize"
     openai_token_url: str = "https://auth.openai.com/oauth/token"
-    openai_redirect_uri: str = "http://localhost:1455/auth/callback"
+    openai_redirect_uri: str = "http://localhost:18080/auth/callback"
     openai_scope: str = "openid email profile offline_access"
 
     # 代理配置

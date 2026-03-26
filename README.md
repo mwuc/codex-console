@@ -71,6 +71,37 @@
 - Python 3.10+
 - `uv`（推荐）或 `pip`
 
+## 开发测试（推荐命令）
+
+为避免解释器混用导致的依赖或导入问题，建议始终使用 `python -m ...` 形式运行安装和测试命令。
+
+```bash
+# 1) 创建并激活虚拟环境（示例）
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+
+# macOS / Linux
+source .venv/bin/activate
+
+# 2) 在当前解释器中安装项目和测试依赖
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+
+# 3) 运行测试（始终使用 python -m）
+python -m pytest -q
+```
+
+不要直接使用裸命令 `pytest`，否则可能调用到系统里另一个 Python 环境下的 pytest。
+
+如需快速确认当前环境是否正确，可执行：
+
+```bash
+python -c "import src; print(src.__file__)"
+python -m pytest --version
+```
+
 ## 🚀 快速安装与运行
 
 根据你的使用环境，我们提供了两种启动方式。如果你想在云服务器上 24 小时挂机注册，强烈推荐使用第二种**后台常驻部署**。

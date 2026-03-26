@@ -9,7 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     # WebUI 默认配置
     WEBUI_HOST=0.0.0.0 \
-    WEBUI_PORT=1455 \
+    WEBUI_PORT=18080 \
     DISPLAY=:99 \
     ENABLE_VNC=1 \
     VNC_PORT=5900 \
@@ -43,7 +43,7 @@ COPY scripts/docker/start-webui.sh /app/scripts/docker/start-webui.sh
 RUN chmod +x /app/scripts/docker/start-webui.sh
 
 # 暴露端口
-EXPOSE 1455
+EXPOSE 18080
 EXPOSE 6080
 EXPOSE 5900
 

@@ -133,8 +133,9 @@ body {
     border: 1px solid rgba(245, 158, 11, 0.28);
     border-radius: var(--radius-lg);
     background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(16, 163, 127, 0.08));
-    box-shadow: var(--shadow-sm); */
+    box-shadow: var(--shadow-sm);
 }
+*/
 
 .site-notice-heading {
     display: flex;
