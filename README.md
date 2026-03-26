@@ -80,7 +80,7 @@
 对于 macOS 或带有较新 Python 环境的 Linux 桌面用户，直接在终端执行以下命令即可拉取并启动：
 
 ```bash
-git clone https://github.com/mwuc/codex-console-sijuly.git && cd codex-console && pip install -r requirements.txt && python webui.py --port 18090 --access-password admin888
+git clone https://github.com/mwuc/codex-console.git && cd codex-console && pip install -r requirements.txt && python webui.py --port 18090 --access-password admin888
 ```
 启动成功后，浏览器访问 http://127.0.0.1:18090，密码 admin888 即可使用。
 
