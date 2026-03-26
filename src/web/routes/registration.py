@@ -294,15 +294,18 @@ def _run_sync_registration_task(task_uuid: str, email_service_type: str, proxy: 
                 elif service_type == EmailServiceType.MOE_MAIL:
                     # 检查数据库中是否有可用的自定义域名服务
                     from ...database.models import EmailService as EmailServiceModel
-                    db_service = db.query(EmailServiceModel).filter(
+                    db_services = db.query(EmailServiceModel).filter(
                         EmailServiceModel.service_type == "moe_mail",
                         EmailServiceModel.enabled == True
-                    ).order_by(EmailServiceModel.priority.asc()).first()
+                    ).all()
 
-                    if db_service and db_service.config:
+                    valid_services = [s for s in db_services if s.config]
+
+                    if valid_services:
+                        db_service = random.choice(valid_services)
                         config = _normalize_email_service_config(service_type, db_service.config, actual_proxy_url)
                         crud.update_registration_task(db, task_uuid, email_service_id=db_service.id)
-                        logger.info(f"使用数据库自定义域名服务: {db_service.name}")
+                        logger.info(f"🎲 盲盒抽取域名邮箱成功: {db_service.name}")
                     elif settings.custom_domain_base_url and settings.custom_domain_api_key:
                         config = {
                             "base_url": settings.custom_domain_base_url,
@@ -869,8 +872,8 @@ async def start_batch_registration(
     - interval_max: 最大间隔秒数
     """
     # 验证参数
-    if request.count < 1 or request.count > 100:
-        raise HTTPException(status_code=400, detail="注册数量必须在 1-100 之间")
+    if request.count < 1 or request.count > 2000:
+        raise HTTPException(status_code=400, detail="注册数量必须在 1-2000 之间")
 
     try:
         EmailServiceType(request.email_service_type)

@@ -11,5 +11,6 @@ python-multipart>=0.0.6
 sqlalchemy>=2.0.0
 aiosqlite>=0.19.0
 psycopg[binary]>=3.1.18
-# 自动绑卡（local_auto）依赖
+requests>=2.31.0
+# auto add credit card (local_auto) dependence
 playwright>=1.40.0
