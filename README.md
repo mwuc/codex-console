@@ -71,166 +71,66 @@
 - Python 3.10+
 - `uv`（推荐）或 `pip`
 
-## 安装依赖
+## 🚀 快速安装与运行
+
+根据你的使用环境，我们提供了两种启动方式。如果你想在云服务器上 24 小时挂机注册，强烈推荐使用第二种**后台常驻部署**。
+
+### 方案一：极简一键运行 (适合本地电脑 / 已有 Python 3.10+ 环境)
+
+对于 macOS 或带有较新 Python 环境的 Linux 桌面用户，直接在终端执行以下命令即可拉取并启动：
 
 ```bash
-# 使用 uv（推荐）
-uv sync
+git clone https://github.com/mwuc/codex-console-sijuly.git && cd codex-console && pip install -r requirements.txt && python webui.py --port 18090 --access-password admin888
+```
+启动成功后，浏览器访问 http://127.0.0.1:18090，密码 admin888 即可使用。
 
-# 或使用 pip
+### 方案二：云服务器全自动后台部署 (⭐ 强烈推荐)
+如果你使用的是云服务器（如甲骨文 ARM 实例、Ubuntu 20.04 等），系统默认环境可能较老，且 SSH 断开会导致任务停止。请使用以下步骤进行纯净环境构建与 Systemd 守护进程部署：
+
+一. 安装纯净的 Python 环境 (以 Miniconda 为例)
+```bash
+mkdir -p ~/miniconda3
+arm:wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh -O ~/miniconda3/miniconda.sh
+amd:wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+# 创建新环境
+conda create -n myenv python=3.13
+
+# 激活环境
+conda activate myenv
+```
+二. 拉取代码并安装依赖
+```bash
+# 推荐将项目放在 /opt 目录下统一管理
+git clone https://github.com/mwuc/codex-console.git /opt/codex-console
+cd /opt/codex-console
 pip install -r requirements.txt
 ```
-
-## 环境变量配置
-
-可选。复制 `.env.example` 为 `.env` 后按需修改:
-
+三. 注册系统级后台服务 (Systemd)
 ```bash
-cp .env.example .env
+cat << 'EOF' > /etc/systemd/system/codex.service
+[Unit]
+Description=Codex Console Web UI
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/opt/codex-console
+# 直接调用 Miniconda 基础环境的 Python，确保依赖互通
+ExecStart=/root/miniconda3/envs/codex/bin/python webui.py --port 8080 --access-password admin999
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 启动并设置开机自启
+systemctl daemon-reload
+systemctl enable codex
+systemctl start codex
 ```
-
-常用变量如下:
-
-| 变量 | 说明 | 默认值 |
-| --- | --- | --- |
-| `APP_HOST` | 监听主机 | `0.0.0.0` |
-| `APP_PORT` | 监听端口 | `8000` |
-| `APP_ACCESS_PASSWORD` | Web UI 访问密钥 | `admin123` |
-| `APP_DATABASE_URL` | 数据库连接字符串 | `data/database.db` |
-
-优先级:
-
-`命令行参数 > 环境变量(.env) > 数据库设置 > 默认值`
-
-## 启动 Web UI
-
-```bash
-# 默认启动（127.0.0.1:8000）
-python webui.py
-
-# 指定地址和端口
-python webui.py --host 0.0.0.0 --port 8080
-
-# 调试模式（热重载）
-python webui.py --debug
-
-# 设置 Web UI 访问密钥
-python webui.py --access-password mypassword
-
-# 组合参数
-python webui.py --host 0.0.0.0 --port 8080 --access-password mypassword
-```
-
-说明:
-
-- `--access-password` 的优先级高于数据库中的密钥设置
-- 该参数只对本次启动生效
-- 打包后的 exe 也支持这个参数
-
-例如:
-
-```bash
-codex-console.exe --access-password mypassword
-```
-
-启动后访问:
-
-[http://127.0.0.1:8000](http://127.0.0.1:8000)
-
-## Docker 部署
-
-### 使用 docker-compose
-
-```bash
-docker-compose up -d
-```
-
-你可以在 `docker-compose.yml` 中修改环境变量，比如端口和访问密码。  
-如果需要看“全自动绑卡”的可视化浏览器，打开：
-
-- noVNC: `http://127.0.0.1:6080`
-
-### 使用 docker run
-
-```bash
-docker run -d \
-  -p 1455:1455 \
-  -p 6080:6080 \
-  -e DISPLAY=:99 \
-  -e ENABLE_VNC=1 \
-  -e VNC_PORT=5900 \
-  -e NOVNC_PORT=6080 \
-  -e WEBUI_HOST=0.0.0.0 \
-  -e WEBUI_PORT=1455 \
-  -e WEBUI_ACCESS_PASSWORD=your_secure_password \
-  -v $(pwd)/data:/app/data \
-  --name codex-console \
-  ghcr.io/<yourname>/codex-console:latest
-```
-
-说明:
-
-- `WEBUI_HOST`: 监听主机，默认 `0.0.0.0`
-- `WEBUI_PORT`: 监听端口，默认 `1455`
-- `WEBUI_ACCESS_PASSWORD`: Web UI 访问密码
-- `DEBUG`: 设为 `1` 或 `true` 可开启调试模式
-- `LOG_LEVEL`: 日志级别，例如 `info`、`debug`
-
-注意:
-
-`-v $(pwd)/data:/app/data` 很重要，这会把数据库和账号数据持久化到宿主机。否则容器一重启，数据也可能跟着表演消失术。
-
-## 使用远程 PostgreSQL
-
-```bash
-export APP_DATABASE_URL="postgresql://user:password@host:5432/dbname"
-python webui.py
-```
-
-也支持 `DATABASE_URL`，但优先级低于 `APP_DATABASE_URL`。
-
-## 打包为可执行文件
-
-```bash
-# Windows
-build.bat
-
-# Linux/macOS
-bash build.sh
-```
-
-Windows 打包完成后，默认会在 `dist/` 目录生成类似下面的文件:
-
-```text
-dist/codex-console-windows-X64.exe
-```
-
-如果打包失败，优先检查:
-
-- Python 是否已加入 PATH
-- 依赖是否安装完整
-- 杀毒软件是否拦截了 PyInstaller 产物
-- 终端里是否有更具体的报错日志
-
-## 项目定位
-
-这个仓库更适合作为:
-
-- 原项目的修复增强版
-- 当前注册链路的兼容维护版
-- 自己二次开发的基础版本
-
-如果你准备公开发布，建议在仓库描述里明确写上:
-
-`Forked and fixed from cnlimiter/codex-manager`
-
-这样既方便别人理解来源，也对上游作者更尊重。
-
-## 仓库命名
-
-当前仓库名:
-
-`codex-console`
+🎉 部署完成！ 浏览器访问 http://你的服务器IP:8090，密码 admin888 即可使用。（请确保云厂商防火墙已放行 8090 端口）
 
 ## 免责声明
 
