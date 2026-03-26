@@ -130,7 +130,7 @@ systemctl daemon-reload
 systemctl enable codex
 systemctl start codex
 ```
-🎉 部署完成！ 浏览器访问 http://你的服务器IP:8090，密码 admin888 即可使用。（请确保云厂商防火墙已放行 8090 端口）
+🎉 部署完成！ 浏览器访问 http://你的服务器IP:8080，密码 admin999 即可使用。（请确保云厂商防火墙已放行 8080 端口）
 
 ## 免责声明
 
