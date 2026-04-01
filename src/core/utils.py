@@ -581,3 +581,28 @@ class Timer:
         if self.start_time is not None:
             return time.time() - self.start_time
         return 0.0
+
+def generate_domain_prefix(count):
+    """
+    生成指定长度的随机字母字符串
+    
+    参数:
+        count (int): 需要生成的字符个数
+    
+    返回:
+        str: 随机字符串
+    """
+    # 1. 参数校验
+    if not isinstance(count, int):
+        raise TypeError("参数必须是整数")
+    if count < 0:
+        raise ValueError("参数不能为负数")
+    if count == 0:
+        return ""
+
+    # 2. 定义字符集 (a-z)
+    # 如果想要包含大写字母，可以改用 string.ascii_letters
+    letters = string.ascii_lowercase
+
+    # 3. 生成并返回
+    return ''.join(random.choices(letters, k=count))

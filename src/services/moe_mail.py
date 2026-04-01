@@ -16,8 +16,10 @@ from urllib.parse import urljoin
 from .base import BaseEmailService, EmailServiceError, EmailServiceType
 from ..core.http_client import HTTPClient, RequestConfig
 from ..config.constants import OTP_CODE_PATTERN
+from ..core.utils import generate_domain_prefix
 
 logger = logging.getLogger(__name__)
+
 
 
 class MeoMailEmailService(BaseEmailService):
@@ -151,7 +153,9 @@ class MeoMailEmailService(BaseEmailService):
             request_config = config or {}
             domain = request_config.get("domain") or self.config.get("default_domain")
             prefix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=14))
-            email_address = f"{prefix}@{domain}"
+            domain_prefix = generate_domain_prefix(6)
+            email_address = f"{prefix}@{domain_prefix}.{domain}"
+            # email_address = f"{prefix}@{domain}"
             email_info = {
                 "email": email_address,
                 "service_id": email_address,
