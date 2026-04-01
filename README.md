@@ -120,15 +120,14 @@ git clone https://github.com/mwuc/codex-console.git && cd codex-console && pip i
 
 一. 安装纯净的 Python 环境 (以 Miniconda 为例)
 ```bash
-mkdir -p ~/miniconda3
-arm:wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh -O ~/miniconda3/miniconda.sh
-amd:wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
-bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+sudo apt update
+sudo apt install python3 python3-pip python3-venv
+
 # 创建新环境
-conda create -n myenv python=3.13
+python3 -m venv codexenv
 
 # 激活环境
-conda activate myenv
+source codexenv/bin/activate
 ```
 二. 拉取代码并安装依赖
 ```bash
@@ -148,7 +147,7 @@ After=network.target
 User=root
 WorkingDirectory=/opt/codex-console
 # 直接调用 Miniconda 基础环境的 Python，确保依赖互通
-ExecStart=/root/miniconda3/envs/codex/bin/python webui.py --port 18080 --access-password admin999
+ExecStart=/root/codexenv/bin/python webui.py --port 18080 --access-password admin999
 Restart=always
 RestartSec=5
 
